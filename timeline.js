@@ -206,7 +206,7 @@ function updateTimeline(){
   if(!handicapTracksEnabled)ranges.push(...visibleBoatRanges(boat.points,bounds));
   else{
    const clock=ghostClocks.get(boat.id);
-   if(!clock.error){
+   if(clock&&!clock.error){
     ranges.push(...visibleBoatRanges(boat.points,bounds,clock));
     const finish=trackPosition(boat.points,clock.sourceEnd)?.point;
     if(finish&&finish[0]>=bounds.west&&finish[0]<=bounds.east&&finish[1]>=bounds.south&&finish[1]<=bounds.north)

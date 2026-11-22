@@ -160,6 +160,17 @@ function createVisibleBoatRow(boat){
  extra.hidden=!expandedBoatRows.has(boat.id);node.setAttribute('aria-expanded',String(!extra.hidden));node.setAttribute('aria-controls',extra.id);
  const raceClass=document.createElement('div');raceClass.className='visible-boat-class';srBind(raceClass,'textContent',()=>srText('Klasse: ')+(raceClassLabel(boat.raceClassName)||srText('Ikke oplyst')));
  extra.append(raceClass);
+ if(boat.handicapRule||boat.handicapSecondsPerNm>0){
+  const rating=document.createElement('div');
+  srBind(rating,'textContent',()=>{
+   if(boat.handicapRule==='LOA')return srText('LOA · sejlet tid');
+   if(boat.handicapRule==='TCF')return srText('Texel TCF: {0}',new Intl.NumberFormat(srLocale,{minimumFractionDigits:3}).format(boat.handicapTimeFactor));
+   if(!(boat.handicapSecondsPerNm>0))return srText('Handicap: ikke oplyst');
+   const label=boat.handicapRule==='GPH'?'DH GPH: {0} sek./sømil':'Handicap: {0} sek./sømil';
+   return srText(label,new Intl.NumberFormat(srLocale,{minimumFractionDigits:1}).format(boat.handicapSecondsPerNm));
+  });
+  extra.append(rating);
+ }
  if(boat.country){
   const startNumber=document.createElement('div'),country=document.createElement('div');
   srBind(startNumber,'textContent',()=>srText('Startnummer: {0}',boat.startNumber));

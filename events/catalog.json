@@ -2993,8 +2993,8 @@
         ]
       ],
       "features": {
-        "weather": false,
-        "handicap": false
+        "weather": true,
+        "handicap": true
       },
       "nativeFile": "data/events/fyn-cup-2026/native.json.gz",
       "backgroundFile": "data/events/fyn-cup-2026/background.json.gz",
@@ -3008,6 +3008,15 @@
           {
             "id": "78adb8d0-3810-013f-7bd4-04421a259aad",
             "name": "DH Lang",
+            "handicapRule": "GPH",
+            "nameFields": "typeWithRating",
+            "loaClasses": [
+              "313a9520-3d57-013f-ba91-04421a259aad",
+              "315e6250-3d57-013f-baad-04421a259aad",
+              "318ec9c0-3d57-013f-bad2-04421a259aad",
+              "3502b7d0-3d57-013f-bd6f-04421a259aad",
+              "350ab070-3d57-013f-bd78-04421a259aad"
+            ],
             "course": "lang",
             "start": "2026-05-29T09:00:00+00:00",
             "boats": 210,
@@ -3164,6 +3173,8 @@
           {
             "id": "87f74030-3810-013f-7bd8-04421a259aad",
             "name": "Texel Lang",
+            "handicapRule": "TCF",
+            "nameFields": "typeWithRating",
             "course": "lang",
             "start": "2026-05-29T11:30:00+00:00",
             "boats": 17,
@@ -3192,6 +3203,7 @@
       },
       "metadataNotes": [
         "De offentlige løb DH Lang og Texel Lang fra TracTrac indgår på den lange bane.",
+        "Handicapspor vises kun for DH GPH og bruger den officielle banelængde på 138 sømil.",
         "Klassevise starter følger TracTracs startgruppeetiketter, tolket i Europe/Copenhagen.",
         "Den lange rhumbline bruger start-/mållinjen ved Bogense, udsejlingen fra et registreret spor og Fyn rundt-ruten fra Silverrudder.",
         "De røde bøjer ved Thurø Rev, Fyns Hoved og Æbelø bruger brugerens koordinater i decimalminutter.",
@@ -3248,6 +3260,10 @@
     },
     "silverrudder-2026": {
       "file": "weather/silverrudder-2026/manifest.json",
+      "radar": "DMI"
+    },
+    "fyn-cup-2026": {
+      "file": "weather/fyn-cup-2026/manifest.json",
       "radar": "DMI"
     }
   },
