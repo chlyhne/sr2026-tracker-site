@@ -1,7 +1,7 @@
 // The slider measures visible seconds, joining disjoint visits to the map.
 // Weather keeps its source cadence. Visibility uses the same interpolated curve
 // as the boat markers, including crossings with no source point in the viewport.
-let selectedTime=D.start,visibleTimeRanges=[],boatTimeRanges=[],timelineLength=0;
+let selectedTime=viewerStartTime(),visibleTimeRanges=[],boatTimeRanges=[],timelineLength=0;
 let timelineViewportTask=null;
 function invalidateTimelineViewport(){
  if(timelineViewportTask!==null)clearTimeout(timelineViewportTask);
@@ -223,7 +223,7 @@ function updateTimeline(){
  }
  // Events in excluded gaps remain available through event navigation only.
  // Keep a manually selected event's exact time without inserting it into the slider.
- visibleTimeRanges=boatTimeRanges.length?boatTimeRanges:[{start:D.start,end:viewerEndTime()}];
+ visibleTimeRanges=boatTimeRanges.length?boatTimeRanges:[{start:viewerStartTime(),end:viewerEndTime()}];
  timelineLength=visibleTimeRanges.reduce((sum,r)=>sum+r.end-r.start+1,0);
  const slider=$('time');slider.min=0;slider.max=Math.max(0,timelineLength-1);slider.step=1;slider.disabled=timelineLength<2;
  // Derived UI never writes replay time or the playback tick timestamp.

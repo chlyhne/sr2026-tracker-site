@@ -570,6 +570,7 @@ function startPlayback({target=null}={}){
  if(interval!==null||hasRenderingFailure())return;
  if((!target&&currentTime()>=viewerEndTime())||!finishEventEditing())return;
  leaveOpenedEvent();if(target)followedBoatId=null;
+ if(!target)seekToReplayStart();
  prepareSelectedTracks();
  if(playbackGateMeasurement===null){
   const points=currentGateMeasurement().map(point=>[...point]);
