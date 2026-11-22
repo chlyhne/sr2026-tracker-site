@@ -1,0 +1,73 @@
+// Metres. Other boats use provisional dimensions until measured values are supplied.
+const boatMetadataOverrides=window.SR_EVENT.boatStyle.overrides;
+const sourcedBoatDimensions=window.SR_EVENT.boatStyle.dimensions;
+function boatMetadata(name){
+ const key=name.toLowerCase(),manual=boatMetadataOverrides[key]||{};
+ const dimensions=manual.lengthM!==undefined
+  ?{lengthM:manual.lengthM,beamM:manual.beamM,measurementBasis:'user'}
+  :sourcedBoatDimensions[key]||{lengthM:10,beamM:3,estimated:true};
+ return {...dimensions,hull:manual.hull||'common'};
+}
+// Load the editable SVG assets once. Tight hull bounds define true length and beam.
+const boatHulls={};
+async function loadBoatHulls(){
+ for(const name of ['modern','classic','common']){
+  const response=await fetch(name+'.svg');
+  if(!response.ok)throw new Error(srText('Bådformen ')+name+srText(' kunne ikke indlæses.'));
+  const svg=new DOMParser().parseFromString(await response.text(),'image/svg+xml');
+  const d=svg.querySelector('path')?.getAttribute('d');
+  if(!d)throw new Error(srText('Bådformen ')+name+srText(' mangler et skrog.'));
+  const measuring=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  measuring.style.cssText='position:absolute;width:0;height:0;visibility:hidden';
+  const path=document.createElementNS(measuring.namespaceURI,'path');path.setAttribute('d',d);
+  measuring.append(path);document.body.append(measuring);
+  const bounds=path.getBBox();measuring.remove();
+  boatHulls[name]={d,transform:`scale(${1/bounds.width} ${1/bounds.height}) translate(${-bounds.x-bounds.width/2} ${-bounds.y-bounds.height/2})`};
+ }
+}
+function boatCourse(points,time){
+ const i=Math.max(0,timeBoundary(points,time,true)-1),a=points[i],b=points[i+1];
+ if(b&&b[2]>a[2]&&b[2]-a[2]<=TRACK_MAX_GAP){
+  const v=trackValue(points,i,time).velocity;
+  if(Math.hypot(v[0],v[1])>1e-12)return Math.atan2(v[0]*Math.cos(a[1]*Math.PI/180),v[1]);
+  if(b[0]!==a[0]||b[1]!==a[1])return Math.atan2((b[0]-a[0])*Math.cos(a[1]*Math.PI/180),b[1]-a[1]);
+ }
+ if(i>0&&a[2]-points[i-1][2]<=TRACK_MAX_GAP){
+  const previous=points[i-1];return Math.atan2((a[0]-previous[0])*Math.cos(a[1]*Math.PI/180),a[1]-previous[1]);
+ }
+ return 0;
+}
+function renderBoatIcon(group,boat,position,time,colour){
+ const hull=boatHulls[boat.metadata.hull];
+ const icon=el('g',{class:'boat-icon','data-hull':boat.metadata.hull,'data-lat':position.point[1],
+  'data-course':boatCourse(boat.points,time),'data-length-m':boat.metadata.lengthM,
+  'data-beam-m':boat.metadata.beamM},group);
+ const emphasis=el('g',{class:'boat-emphasis'},icon);
+ el('path',{class:'boat-hull',d:hull.d,transform:hull.transform,
+  fill:colour,stroke:'#14212a','stroke-width':1,'vector-effect':'non-scaling-stroke'},emphasis);
+}
+function resizeBoatIcons(matrix){
+ // The map is linear in longitude/latitude, so east and north have distinct scales.
+ const radians=Math.PI/180,earthRadius=6371008.8,minimumPixelsPerMetre=8/2.54;
+ for(const icon of $('map').querySelectorAll('.boat-icon')){
+  const key=[matrix.a,matrix.b,matrix.c,matrix.d,icon.dataset.lat,icon.dataset.course,!!icon.parentNode.querySelector('.boat-name')].join(':');
+  if(icon.boatSizeKey===key)continue;icon.boatSizeKey=key;
+  const latitude=+icon.dataset.lat*radians,course=+icon.dataset.course;
+  const east=1000/(4.5*radians*earthRadius*Math.cos(latitude));
+  const north=1180/(3*radians*earthRadius);
+  const sin=Math.sin(course),cos=Math.cos(course);
+  const beam=+icon.dataset.beamM,length=+icon.dataset.lengthM;
+  // Screen-space vectors for starboard beam and the stern-to-bow axis.
+  const bx=matrix.a*east*cos+matrix.c*north*sin;
+  const by=matrix.b*east*cos+matrix.d*north*sin;
+  const lx=matrix.a*east*sin-matrix.c*north*cos;
+  const ly=matrix.b*east*sin-matrix.d*north*cos;
+  // The minimum is pixels per metre, shared by all hull sizes.
+  const beamScale=Math.max(1,minimumPixelsPerMetre/Math.hypot(bx,by));
+  const lengthScale=Math.max(1,minimumPixelsPerMetre/Math.hypot(lx,ly));
+  icon.dataset.displayBeamPx=beam*Math.hypot(bx,by)*beamScale;
+  setAttr(icon,'transform',`matrix(${bx*beam*beamScale} ${by*beam*beamScale} ${-lx*length*lengthScale} ${-ly*length*lengthScale} 0 0)`);
+  const name=icon.parentNode.querySelector('.boat-name');
+  if(name)name.setAttribute('x',Math.max(7,(Math.abs(bx*beam)*beamScale+Math.abs(lx*length)*lengthScale)/2+3));
+ }
+}

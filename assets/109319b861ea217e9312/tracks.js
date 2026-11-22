@@ -1,0 +1,177 @@
+// Explicit iPhone presentation, selected before preparation; never a failure fallback.
+const SIMPLE_IPHONE_TRACKS=/iPhone/.test(globalThis.navigator?.userAgent||'');
+// Shape-preserving cubic Hermite interpolation (PCHIP) in source time.
+// Every observation is an interpolation knot. The renderers evaluate the cubic
+// at the current zoom instead of baking a fixed-resolution track image.
+const TRACK_MAX_GAP=300;
+const trackModelCache=new WeakMap();
+const TRACK_SPEED_MAX=15,TRACK_SPEED_BINS=128,TRACK_SPEED_MISSING='#8a949b';
+function trackSpeedColour(speed){
+ if(!Number.isFinite(speed)||speed<0)return TRACK_SPEED_MISSING;
+ const x=Math.max(0,Math.min(1,speed/TRACK_SPEED_MAX));
+ const channel=center=>Math.round(255*Math.max(0,Math.min(1,1.5-Math.abs(4*x-center))));
+ return `rgb(${channel(3)},${channel(2)},${channel(1)})`;
+}
+const TRACK_SPEED_COLOURS=Array.from({length:TRACK_SPEED_BINS},(_,bin)=>trackSpeedColour(bin*TRACK_SPEED_MAX/(TRACK_SPEED_BINS-1)));
+function speedBin(speed){
+ return !Number.isFinite(speed)||speed<0?-1:Math.round(Math.min(TRACK_SPEED_MAX,speed)/TRACK_SPEED_MAX*(TRACK_SPEED_BINS-1));
+}
+// Prepare immutable nominal GPU buffers once for the whole voyage.
+function prepareBoatTrack(boat){return webglTracks.prepare(boat);}
+function prepareSelectedTracks(){
+ for(const boat of boats)if(boatIsDisplayed(boat))webglTracks.requirePrepared(boat);
+}
+async function prepareFleetTracks(onProgress=()=>{}){
+ let prepared=0;
+ if(!webglTracks.active)return false;
+ await webglTracks.preparation.files.open();
+ for(const boat of boats){
+  // The renderer has already displayed its error. Finish loading its controls
+  // so the user can reload; no alternative rendering or calculation is used.
+  if(!webglTracks.active)return false;
+  setViewerLoadingStage(srText('Klargør spor · ')+boat.name+' ('+(prepared+1)+'/'+boats.length+')');
+  await prepareBoatTrack(boat);
+  onProgress(++prepared,boats.length);
+  // Let the loading message paint between boats while interaction is locked.
+  await new Promise(resolve=>setTimeout(resolve,0));
+ }
+ webglTracks.preparation.finishSourcePreparation();
+ return true;
+}
+function trackSpeedLegendLayout(){
+ const rect=mapViewport().rect;
+ return {left:12,top:50,width:Math.max(110,Math.min(230,rect.width-24)),height:trackUsesComparison()?77:63};
+}
+let trackLegendKey=null;
+function renderTrackSpeedLegend(){
+ const layer=$('trackSpeedLegend');
+ const map=$('map'),rect=mapViewport().rect,matrix=mapViewport()?.matrix;if(!matrix)return;
+ const layout=trackSpeedLegendLayout(),{width}=layout;
+ const point=new DOMPoint(rect.left+layout.left,rect.top+layout.top).matrixTransform(matrix.inverse());
+ const key=[width,trackUsesBoatColour(),trackUsesComparison(),comparison.basis,trackGainLimit(),referenceBoat()?.id,referenceBoat()?.name].join(':');
+ if(key===trackLegendKey){if(layer.firstElementChild)positionScreenGroup(layer.firstElementChild,point.x,point.y,1/Math.hypot(matrix.a,matrix.b));return;}
+ trackLegendKey=key;layer.replaceChildren();
+ if(trackUsesBoatColour()){layer.removeAttribute('aria-label');return;}
+ const group=screenGroup(point.x,point.y,layer);
+ group.setAttribute('transform',`translate(${point.x} ${point.y}) scale(${1/Math.hypot(matrix.a,matrix.b)})`);
+ el('rect',{width,height:layout.height,rx:5,fill:'#ffffff',opacity:.94},group);
+ const relative=trackUsesComparison(),timeMode=comparison.basis==='time',limit=trackGainLimit(),referenceName=referenceBoat()?.name??srText('referencebåd');
+ function legendLabel(label,attrs){
+  const text=el('text',{x:10,fill:'#173d4c',...attrs,'aria-label':label},group);
+  text.textContent=label;
+  if(text.getComputedTextLength()>width-20){
+   const characters=Array.from(label);let lo=0,hi=characters.length;
+   while(lo<hi){
+    const mid=Math.ceil((lo+hi)/2);text.textContent=characters.slice(0,mid).join('')+'…';
+    if(text.getComputedTextLength()<=width-20)lo=mid;else hi=mid-1;
+   }
+   text.textContent=characters.slice(0,lo).join('')+'…';
+  }
+  el('title',{},text).textContent=label;
+ }
+ const comparisonHelp=srText("Sammenlignet med {0} ved samme sted på ruten. {1} Under −{2}: varm gul (større tab). Over +{3}: magenta (større gevinst). {4}: gennemsigtigt spor i bådens egen farve.",referenceName,timeMode?srText('Tid pr. 100 meter langs rhumblinen. Referencebådens frem- og tilbagepassager summeres. Grå: mangler fælles data eller begge har uendeligt tidsforbrug.'):srText('Grå: mangler fælles passage eller data.'),limit,limit,referenceName);
+ layer.setAttribute('aria-label',relative?`${timeMode?srText('Tidsforskel i sekunder pr. 100 meter: rød tab, blå gevinst'):srText('Fartforskel: rød langsommere, blå hurtigere')}. ${comparisonHelp}`:srText('Bådfart over grunden, jet-farveskala fra 0 til 15 knob'));
+ if(relative)el('title',{},group).textContent=comparisonHelp;
+ legendLabel(relative?(timeMode?`s/100 m · ${referenceName}`:srText("Mod {0} · {1}",referenceName,comparison.basis==='handicap'?'ToD · kn':srText('absolut · kn'))):srText('Bådfart · SOG · knob'),{y:17,'font-size':11,'font-weight':650});
+ const gradient=el('linearGradient',{id:'trackSpeedJetGradient',x1:0,x2:1,y1:0,y2:0},el('defs',{},group));
+ for(let i=0;i<=128;i++)el('stop',{offset:i/128,'stop-color':relative?trackGainColour(-limit+2*limit*i/128,limit):trackSpeedColour(TRACK_SPEED_MAX*i/128)},gradient);
+ el('rect',{x:10,y:24,width:width-20,height:13,fill:'url(#trackSpeedJetGradient)'},group);
+ if(relative){
+  for(const [side,d,fill,label] of [
+   ['under','M10 24 3 30.5 10 37Z',TRACK_GAIN_UNDERFLOW_COLOUR,srText("Under −{0}: større tab",limit)],
+   ['over',`M${width-10} 24 ${width-3} 30.5 ${width-10} 37Z`,TRACK_GAIN_OVERFLOW_COLOUR,srText("Over +{0}: større gevinst",limit)]
+  ])el('title',{},el('path',{d,fill,'data-gain-overflow':side,'aria-label':label},group)).textContent=label;
+ }
+ for(const value of relative?[-limit,0,limit]:[0,5,10,15]){
+  const x=10+(width-20)*(relative?(value+limit)/(2*limit):value/TRACK_SPEED_MAX);
+  el('line',{x1:x,x2:x,y1:37,y2:41,stroke:'#173d4c'},group);
+  el('text',{x,y:54,fill:'#173d4c','font-size':11,'text-anchor':value===(relative?-limit:0)?'start':value===(relative?limit:15)?'end':'middle'},group).textContent=relative?(value<0?`−${limit}`:value>0?`+${limit}`:0):value===15?'15+':value;
+ }
+ if(relative){
+  legendLabel(timeMode?srText('Rød: tab · Blå: gevinst'):srText('Rød: langsommere · Blå: hurtigere'),{y:69,'font-size':10});
+ }
+}
+
+function endpointSlope(h0,h1,d0,d1){
+ const slope=((2*h0+h1)*d0-h0*d1)/(h0+h1);
+ if(Math.sign(slope)!==Math.sign(d0))return 0;
+ return Math.sign(d0)!==Math.sign(d1)&&Math.abs(slope)>3*Math.abs(d0)?3*d0:slope;
+}
+
+function getTrackModel(points){
+ if(trackModelCache.has(points))return trackModelCache.get(points);
+ const slopes=[new Float64Array(points.length),new Float64Array(points.length)];
+ for(let axis=0;axis<2;axis++){
+ let start=0;
+ while(start<points.length){
+  if(!Number.isFinite(points[start][axis])){start++;continue;}
+  let end=start;
+  while(end+1<points.length&&Number.isFinite(points[end+1][axis])&&points[end+1][2]>points[end][2]&&points[end+1][2]-points[end][2]<=TRACK_MAX_GAP)end++;
+  if(end>start){
+   const slope=slopes[axis],h=i=>points[i+1][2]-points[i][2],d=i=>(points[i+1][axis]-points[i][axis])/h(i);
+   if(end===start+1){slope[start]=slope[end]=d(start);start=end+1;continue;}
+   slope[start]=endpointSlope(h(start),h(start+1),d(start),d(start+1));
+   slope[end]=endpointSlope(h(end-1),h(end-2),d(end-1),d(end-2));
+   for(let i=start+1;i<end;i++){
+    const before=d(i-1),after=d(i);
+    if(!before||!after||Math.sign(before)!==Math.sign(after)){slope[i]=0;continue;}
+    const w1=2*h(i)+h(i-1),w2=h(i)+2*h(i-1);
+    slope[i]=(w1+w2)/(w1/before+w2/after);
+   }
+  }
+  start=end+1;
+ }
+ }
+ const model={slopes};trackModelCache.set(points,model);return model;
+}
+
+function trackValue(points,index,time,model=null){
+ const a=points[index],b=points[index+1],h=b[2]-a[2],u=Math.max(0,Math.min(1,(time-a[2])/h));
+ if(SIMPLE_IPHONE_TRACKS)return {point:[a[0]+(b[0]-a[0])*u,a[1]+(b[1]-a[1])*u,time],velocity:[(b[0]-a[0])/h,(b[1]-a[1])/h]};
+ return trackCurveValue(points,index,time,model);
+}
+// The prepared reference profiles always use the same PCHIP curve, including
+// when the phone presents that data with straight segments.
+function trackCurveValue(points,index,time,model=null){
+ const a=points[index],b=points[index+1],h=b[2]-a[2],u=Math.max(0,Math.min(1,(time-a[2])/h));
+ model??=getTrackModel(points);
+ const u2=u*u,u3=u2*u,point=[0,0,time],velocity=[0,0];
+ for(let axis=0;axis<2;axis++){
+  const delta=b[axis]-a[axis],m0=model.slopes[axis][index],m1=model.slopes[axis][index+1];
+  point[axis]=a[axis]+delta*(3*u2-2*u3)+h*(m0*(u3-2*u2+u)+m1*(u3-u2));
+  velocity[axis]=delta*(6*u-6*u2)/h+m0*(3*u2-4*u+1)+m1*(3*u2-2*u);
+ }
+ return {point,velocity};
+}
+
+function trackPosition(points,time){
+ const index=timeBoundary(points,time,true)-1;if(index<0)return null;
+ const a=points[index],b=points[index+1];
+ if(time-a[2]>TRACK_MAX_GAP)return null;
+ if(time===a[2]||!b||b[2]-a[2]>TRACK_MAX_GAP||b[2]<=a[2])return {point:[a[0],a[1],time],interpolated:false,sourceTime:a[2]};
+ return {...trackValue(points,index,time),interpolated:true,sourceTime:a[2]};
+}
+
+function trackIntervalInBounds(points,index,bounds){
+ const a=points[index],b=points[index+1],model=getTrackModel(points);
+ let entry=a[2],exit=b[2];
+ for(let axis=0;axis<2;axis++){
+  const low=axis?bounds.south:bounds.west,high=axis?bounds.north:bounds.east;
+  const first=a[axis],last=b[axis];
+  if(Math.max(first,last)<low||Math.min(first,last)>high)return null;
+  if(first===last)continue;
+  const increasing=last>first;
+  const crossing=value=>{
+   let lo=a[2],hi=b[2];
+   for(let n=0;n<40;n++){
+    const mid=(lo+hi)/2,v=trackValue(points,index,mid,model).point[axis];
+    if((v<value)===increasing)lo=mid;else hi=mid;
+   }
+   return (lo+hi)/2;
+  };
+  if(first<low||first>high)entry=Math.max(entry,crossing(increasing?low:high));
+  if(last<low||last>high)exit=Math.min(exit,crossing(increasing?high:low));
+  if(entry>exit)return null;
+ }
+ return {start:entry,end:exit};
+}
