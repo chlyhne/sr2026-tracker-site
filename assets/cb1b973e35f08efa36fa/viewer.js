@@ -199,33 +199,70 @@ for(const boat of boats)if(Object.hasOwn(localBoatColours,boat.id)){
  colours[boat.name]=colour;
 }
 for(const [name,lon,lat] of window.SR_EVENT.places){const [x,y]=xy([lon,lat]),group=screenGroup(x,y,$('places'));el('circle',{cx:0,cy:0,r:2,fill:'#173d4c'},group);const n=el('text',{x:4,y:-4,fill:'#173d4c','font-size':11,stroke:'#f4fafb','stroke-width':3,'paint-order':'stroke'},group);n.textContent=name}
-// User-supplied mandatory marks; preserve the original decimal minutes.
-for(const [id,lon,lat,title] of window.SR_EVENT.marks){
- const [x,y]=xy([lon,lat]),group=screenGroup(x,y,$('seamarks'));
- el('circle',{id,cx:0,cy:0,r:5,fill:'#e02020',stroke:'#ffffff','stroke-width':1},group);
- srBind(el('title',{},group),'textContent',()=>srText(title));
+function renderSeamarks(marks,selected=null){
+ const layer=$('seamarks');layer.replaceChildren();
+ for(const [id,lon,lat,name] of marks){
+  const [x,y]=xy([lon,lat]),group=screenGroup(x,y,layer);
+  el('circle',{id,r:5,fill:'#e02020',stroke:id===selected?'#173d4c':'#fff','stroke-width':id===selected?2.5:1},group);
+  if(name)el('text',{x:8,y:-6,fill:'#173d4c','font-size':11,'font-weight':650,stroke:'#fff','stroke-width':3,'paint-order':'stroke'},group).textContent=name;
+ }
+ resizeSymbols(layer);
 }
-function courseLineEndpointLabel(name){
- const numbered=/^Start(-Finish)? ([A-Z])$/.exec(name);
- return numbered?srText(numbered[1]?'Start / mål {0}':'Start {0}',numbered[2]):srText(name);
+renderSeamarks(window.SR_EVENT.marks);
+const movingCourseLines=[];
+let courseLinePreviewTime=null;
+function courseLineCoordinatesAt(feature,time){
+ const coordinates=feature.geometry.coordinates;
+ if(!feature.properties.finish_reference_utc)return coordinates;
+ const recorded=feature.properties.endpoints.map((endpoint,index)=>{
+  const track=endpoint.position_track;
+  if(!track)return coordinates[index];
+  let first=0,last=track.length;
+  while(first<last){
+   const middle=(first+last)>>>1;
+   if(track[middle][0]<=time)first=middle+1;else last=middle;
+  }
+  return first?track[first-1].slice(1):null;
+ });
+ return recorded.includes(null)?null:recorded;
+}
+function courseLineEndpointLabel(name,kind){
+ const numbered=/^Start(-Finish|-Mål)? ([A-Z])$/.exec(name);
+ return numbered?srText(kind==='finish'?'Mål {0}':kind==='start'||!numbered[1]?'Start {0}':'Start / mål {0}',numbered[2]):srText(name);
 }
 for(const feature of D.course_lines.features){
- const {kind,name,reference_boat,reference_utc}=feature.properties,coordinates=feature.geometry.coordinates;
+ const {kind,name,reference_boat,reference_utc,finish_reference_utc}=feature.properties,coordinates=feature.geometry.coordinates;
  const colour=kind==='start'||kind==='start-finish'?'#087b3d':'#c62738';
  const group=el('g',{'data-course-line':kind},$('courseLines'));
- srBind(el('title',{},group),'textContent',()=>`${srText(name)} · TracTrac${reference_boat?` · ${reference_boat}`:''}${reference_utc?srText(' · start {0}',fmt(Date.parse(reference_utc)/1000)):''}`);
- el('path',{d:path(coordinates),fill:'none',stroke:'#ffffff','stroke-width':5,'vector-effect':'non-scaling-stroke'},group);
- el('path',{'data-line-geometry':kind,d:path(coordinates),fill:'none',stroke:colour,'stroke-width':2.5,
+ srBind(el('title',{},group),'textContent',()=>`${srText(name)} · TracTrac${reference_boat?` · ${reference_boat}`:''}${reference_utc&&!finish_reference_utc?srText(kind==='finish'?' · mål {0}':' · start {0}',fmt(Date.parse(reference_utc)/1000)):''}`);
+ const outline=el('path',{d:path(coordinates),fill:'none',stroke:'#ffffff','stroke-width':5,'vector-effect':'non-scaling-stroke'},group);
+ const line=el('path',{'data-line-geometry':kind,d:path(coordinates),fill:'none',stroke:colour,'stroke-width':2.5,
   'stroke-dasharray':kind==='finish'?'6 4':'none','vector-effect':'non-scaling-stroke'},group);
- for(const [i,coordinate] of coordinates.entries()){
+ const markers=coordinates.map((coordinate,i)=>{
   const [x,y]=xy(coordinate),marker=screenGroup(x,y,group);
   el('circle',{r:3,fill:colour,stroke:'#ffffff','stroke-width':1},marker);
-  srBind(el('title',{},marker),'textContent',()=>courseLineEndpointLabel(feature.properties.endpoints[i].name));
- }
+  srBind(el('title',{},marker),'textContent',()=>courseLineEndpointLabel(feature.properties.endpoints[i].name,kind));
+  return marker;
+ });
  const [x,y]=xy([(coordinates[0][0]+coordinates[1][0])/2,(coordinates[0][1]+coordinates[1][1])/2]);
  const label=screenGroup(x,y,group);
  srBind(el('text',{x:0,y:-10,'text-anchor':'middle',fill:colour,'font-size':12,'font-weight':750,
   stroke:'#ffffff','stroke-width':3,'paint-order':'stroke'},label),'textContent',()=>srText(name));
+ if(finish_reference_utc)movingCourseLines.push({feature,group,outline,line,markers,label});
+}
+function renderMovingCourseLines(time){
+ for(const {feature,group,outline,line,markers,label} of movingCourseLines){
+  const coordinates=courseLineCoordinatesAt(feature,time);
+  group.toggleAttribute('hidden',!coordinates);
+  if(!coordinates)continue;
+  const d=path(coordinates);
+  if(line.getAttribute('d')===d)continue;
+  setAttr(outline,'d',d);setAttr(line,'d',d);
+  const a=xy(coordinates[0]),b=xy(coordinates[1]),anchors=[a,b,a.map((value,i)=>(value+b[i])/2)];
+  for(const [i,node] of [...markers,label].entries()){
+   const [x,y]=anchors[i];setAttr(node,'data-screen-x',x);setAttr(node,'data-screen-y',y);
+  }
+ }
 }
 // Rute T is an open line through the user's waypoints, in the base map layer.
 for(const feature of D.route_t.features){
@@ -395,6 +432,7 @@ function flushRender(){
 // Retain an immediate path for exports, scene restoration and programmatic use.
 function render(){if(!viewerModulesReady){requestRender();return;}consumeRenderRequest();drawMap();}
 function drawMap(){if(hasRenderingFailure())return;if(followedBoatId&&centerViewOnBoat(boats.find(boat=>boat.id===followedBoatId)))setview();const t=currentTime();$('clock').textContent=fmt(t);$('clock').dateTime=new Date(t*1000).toISOString();renderRadar(t);webglBackground.render();renderWindAvailability(t);renderWindBarbs(t);renderTraffic();renderMilitary();
+ renderMovingCourseLines(courseLinePreviewTime??t);
  renderTracks(t,{includeSpeedPins:false});
  renderAnnotations();
  renderNavigation();
@@ -641,6 +679,7 @@ function endPan(e){
  if(map.hasPointerCapture(e.pointerId))map.releasePointerCapture(e.pointerId);
  if(click){
   if(windMode==='off'||navigationMode==='route'||placingNote||noteIndex!==undefined||speedKey!==undefined||boatId)closeWindSelection();
+  if(window.SR_RHUMBLINE_SETUP&&editRhumblineMark(e))return;
   if(navigationMode==='route')addNavigationPoint(e);
   else if(placingNote)placeAnnotation(e);
   else if(noteIndex!==undefined)openPresentationNote(notes[+noteIndex]);

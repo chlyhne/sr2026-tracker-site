@@ -2750,6 +2750,487 @@
         "minProcessNoise": 0.02,
         "maxProcessNoise": 0.5
       }
+    },
+    {
+      "version": 1,
+      "id": "fyn-cup-2026",
+      "title": "Fyn Cup 2026",
+      "timezone": "Europe/Copenhagen",
+      "start": 1780045200,
+      "end": 1780176125,
+      "courses": {
+        "lang": {
+          "name": "Lang bane",
+          "points": [
+            [
+              10.06176095,
+              55.5861375
+            ],
+            [
+              9.812803741312473,
+              55.554690554094286
+            ],
+            [
+              9.754788646435069,
+              55.543535631038715
+            ],
+            [
+              9.741487647816399,
+              55.517856743598955
+            ],
+            [
+              9.726797768405664,
+              55.51740611094634
+            ],
+            [
+              9.68622989640726,
+              55.5196210885175
+            ],
+            [
+              9.675627354510477,
+              55.51685645595273
+            ],
+            [
+              9.67245565407744,
+              55.491411137622414
+            ],
+            [
+              9.69484801111043,
+              55.46216648930298
+            ],
+            [
+              9.791418813393495,
+              55.29438126038974
+            ],
+            [
+              9.97385171558701,
+              55.13129457376771
+            ],
+            [
+              10.071951488102709,
+              55.07379026277509
+            ],
+            [
+              10.144658913734917,
+              55.067816390059136
+            ],
+            [
+              10.326338358781047,
+              55.025601231366394
+            ],
+            [
+              10.524424588256908,
+              55.02385668138987
+            ],
+            [
+              10.589004193223525,
+              55.04260087034394
+            ],
+            [
+              10.612644220109297,
+              55.050769210079544
+            ],
+            [
+              10.62011309611463,
+              55.05615030044776
+            ],
+            [
+              10.632346,
+              55.0578885
+            ],
+            [
+              10.639543086239112,
+              55.05285320520665
+            ],
+            [
+              10.649463017878132,
+              55.037244754746744
+            ],
+            [
+              10.659510137945691,
+              55.03579390582367
+            ],
+            [
+              10.667800109841,
+              55.02833578200481
+            ],
+            [
+              10.733882771959928,
+              55.01968779253465
+            ],
+            [
+              10.876079416191578,
+              55.21740570001178
+            ],
+            [
+              10.999361241954565,
+              55.33729598141828
+            ],
+            [
+              10.769156791259196,
+              55.50687169683754
+            ],
+            [
+              10.62592900180371,
+              55.64104718828889
+            ],
+            [
+              10.155050356715918,
+              55.660218424408114
+            ],
+            [
+              10.079440578122792,
+              55.5860061924745
+            ]
+          ]
+        }
+      },
+      "defaultReference": "78adb8d0-3810-013f-7bd4-04421a259aad:34bc3f70-3d57-013f-bd2f-04421a259aad",
+      "initialView": [
+        -30,
+        410,
+        510,
+        445
+      ],
+      "places": [
+        [
+          "Bogense",
+          10.091,
+          55.568
+        ],
+        [
+          "Middelfart",
+          9.729,
+          55.505
+        ],
+        [
+          "Assens",
+          9.901,
+          55.271
+        ],
+        [
+          "Svendborg",
+          10.612,
+          55.061
+        ],
+        [
+          "Nyborg",
+          10.788,
+          55.313
+        ],
+        [
+          "Kerteminde",
+          10.661,
+          55.45
+        ]
+      ],
+      "marks": [
+        [
+          "0b428830-8495-013d-ad5c-04421a259aad",
+          9.758434,
+          55.542731,
+          "Strib"
+        ],
+        [
+          "0b453af0-8495-013d-ad5f-04421a259aad",
+          9.74158,
+          55.519806,
+          "Ny Lillebæltsbro"
+        ],
+        [
+          "0b436f50-8495-013d-ad5d-04421a259aad",
+          9.677067,
+          55.51386,
+          "Hindsgavl"
+        ],
+        [
+          "a12ffaa0-19ed-013e-2314-342e996a9920",
+          9.693031,
+          55.461923,
+          "Stenderup 1"
+        ],
+        [
+          "bab612a0-19ed-013e-231b-342e996a9920",
+          9.717064,
+          55.468346,
+          "Stenderup 2"
+        ],
+        [
+          "b56e1d60-1866-013e-dea4-04421a259aad",
+          10.155766666666667,
+          55.659416666666665,
+          "Æbelø rød bøje"
+        ],
+        [
+          "0b41a360-8495-013d-ad5b-04421a259aad",
+          9.977854,
+          55.133241,
+          "Helnæs"
+        ],
+        [
+          "3d3d7110-1861-013e-de7a-04421a259aad",
+          10.627884288338588,
+          55.05510216846801,
+          "Svendborg"
+        ],
+        [
+          "0b461850-8495-013d-ad60-04421a259aad",
+          10.733583333333334,
+          55.02016666666667,
+          "Thurø Rev rød bøje"
+        ],
+        [
+          "0b3f7ef0-8495-013d-ad59-04421a259aad",
+          10.991134747070324,
+          55.33631033684831,
+          "Knudshoved"
+        ],
+        [
+          "0b40aee0-8495-013d-ad5a-04421a259aad",
+          10.625616666666666,
+          55.64066666666667,
+          "Fyns Hoved rød bøje"
+        ]
+      ],
+      "features": {
+        "weather": false,
+        "handicap": false
+      },
+      "nativeFile": "data/events/fyn-cup-2026/native.json.gz",
+      "backgroundFile": "data/events/fyn-cup-2026/background.json.gz",
+      "profileRoot": "events/fyn-cup-2026/track-profiles/",
+      "source": {
+        "eventPage": "https://www.tractrac.com/event-page/event_20260526_FYNCUP/3522",
+        "grouping": "classes",
+        "courseLines": "tracked",
+        "duplicateSpeedPolicy": "latest",
+        "races": [
+          {
+            "id": "78adb8d0-3810-013f-7bd4-04421a259aad",
+            "name": "DH Lang",
+            "course": "lang",
+            "start": "2026-05-29T09:00:00+00:00",
+            "boats": 210,
+            "source": "https://em.liveserver1.tractrac.com/events/731967d0-37ec-013f-bb67-1c6b0055db37/races/78adb8d0-3810-013f-7bd4-04421a259aad.json",
+            "classes": [
+              {
+                "id": "313a9520-3d57-013f-ba91-04421a259aad",
+                "name": "START KL. 11:00 - GR. 03-Løb01 - 3-Løb01",
+                "start": "2026-05-29T09:00:00+00:00"
+              },
+              {
+                "id": "315e6250-3d57-013f-baad-04421a259aad",
+                "name": "START KL. 11:00 - GR. 03-Løb02 - 3-Løb02",
+                "start": "2026-05-29T09:00:00+00:00"
+              },
+              {
+                "id": "318ec9c0-3d57-013f-bad2-04421a259aad",
+                "name": "START KL. 11:15 - GR. 03-Løb04 - 3-Løb04",
+                "start": "2026-05-29T09:15:00+00:00"
+              },
+              {
+                "id": "31e10f60-3d57-013f-bb08-04421a259aad",
+                "name": "START KL. 11:30 - GR. 04-Løb06 - 4-Løb06",
+                "start": "2026-05-29T09:30:00+00:00"
+              },
+              {
+                "id": "320410e0-3d57-013f-bb19-04421a259aad",
+                "name": "START KL. 11:30 - GR. 04-Løb07 - 4-Løb07",
+                "start": "2026-05-29T09:30:00+00:00"
+              },
+              {
+                "id": "321f2ed0-3d57-013f-bb2d-04421a259aad",
+                "name": "START KL. 11:30 - GR. 04-Løb08 - 4-Løb08",
+                "start": "2026-05-29T09:30:00+00:00"
+              },
+              {
+                "id": "323e2890-3d57-013f-bb44-04421a259aad",
+                "name": "START KL. 11:45 - GR. 04-Løb09 - 4-Løb09",
+                "start": "2026-05-29T09:45:00+00:00"
+              },
+              {
+                "id": "325e5d40-3d57-013f-bb5b-04421a259aad",
+                "name": "START KL. 11:45 - GR. 04-Løb10 - 4-Løb10",
+                "start": "2026-05-29T09:45:00+00:00"
+              },
+              {
+                "id": "32856210-3d57-013f-bb79-04421a259aad",
+                "name": "START KL. 12:00 - GR. 04-Løb11 - 4-Løb11",
+                "start": "2026-05-29T10:00:00+00:00"
+              },
+              {
+                "id": "32a85c80-3d57-013f-bb93-04421a259aad",
+                "name": "START KL. 12:00 - GR. 04-Løb12 - 4-Løb12",
+                "start": "2026-05-29T10:00:00+00:00"
+              },
+              {
+                "id": "32c9bc30-3d57-013f-bbad-04421a259aad",
+                "name": "START KL. 12:00 - GR. 04-Løb13 - 4-Løb13",
+                "start": "2026-05-29T10:00:00+00:00"
+              },
+              {
+                "id": "32ea9e00-3d57-013f-bbc6-04421a259aad",
+                "name": "START KL. 12:15 - GR. 04-Løb14 - 4-Løb14",
+                "start": "2026-05-29T10:15:00+00:00"
+              },
+              {
+                "id": "32faf9e0-3d57-013f-bbd4-04421a259aad",
+                "name": "START KL. 12:15 - GR. 04-Løb15 - 4-Løb15",
+                "start": "2026-05-29T10:15:00+00:00"
+              },
+              {
+                "id": "332acf50-3d57-013f-bbf6-04421a259aad",
+                "name": "START KL. 12:15 - GR. 04-Løb16 - 4-Løb16",
+                "start": "2026-05-29T10:15:00+00:00"
+              },
+              {
+                "id": "334d3440-3d57-013f-bc06-04421a259aad",
+                "name": "START KL. 12:15 - GR. 04-Løb17 - 4-Løb17",
+                "start": "2026-05-29T10:15:00+00:00"
+              },
+              {
+                "id": "335e8900-3d57-013f-bc14-04421a259aad",
+                "name": "START KL. 12:30 - GR. 04-Løb18 - 4-Løb18",
+                "start": "2026-05-29T10:30:00+00:00"
+              },
+              {
+                "id": "338fa890-3d57-013f-bc3a-04421a259aad",
+                "name": "START KL. 12:30 - GR. 04-Løb20 - 4-Løb20",
+                "start": "2026-05-29T10:30:00+00:00"
+              },
+              {
+                "id": "33ad1230-3d57-013f-bc50-04421a259aad",
+                "name": "START KL. 12:30 - GR. 04-Løb21 - 4-Løb21",
+                "start": "2026-05-29T10:30:00+00:00"
+              },
+              {
+                "id": "33c20000-3d57-013f-bc62-04421a259aad",
+                "name": "START KL. 12:45 - GR. 04-Løb22 - 4-Løb22",
+                "start": "2026-05-29T10:45:00+00:00"
+              },
+              {
+                "id": "33e25390-3d57-013f-bc7d-04421a259aad",
+                "name": "START KL. 12:45 - GR. 04-Løb23 - 4-Løb23",
+                "start": "2026-05-29T10:45:00+00:00"
+              },
+              {
+                "id": "33fdfed0-3d57-013f-bc93-04421a259aad",
+                "name": "START KL. 12:45 - GR. 04-Løb25 - 4-Løb25",
+                "start": "2026-05-29T10:45:00+00:00"
+              },
+              {
+                "id": "3502b7d0-3d57-013f-bd6f-04421a259aad",
+                "name": "START KL. 12:45 - GR. 06-Løb24 - 6-Løb24",
+                "start": "2026-05-29T10:45:00+00:00"
+              },
+              {
+                "id": "3419fd90-3d57-013f-bcab-04421a259aad",
+                "name": "START KL. 13:00 - GR. 04-Løb26 - 4-Løb26",
+                "start": "2026-05-29T11:00:00+00:00"
+              },
+              {
+                "id": "343a7780-3d57-013f-bcc4-04421a259aad",
+                "name": "START KL. 13:00 - GR. 04-Løb27 - 4-Løb27",
+                "start": "2026-05-29T11:00:00+00:00"
+              },
+              {
+                "id": "345b6b90-3d57-013f-bcdd-04421a259aad",
+                "name": "START KL. 13:00 - GR. 04-Løb28 - 4-Løb28",
+                "start": "2026-05-29T11:00:00+00:00"
+              },
+              {
+                "id": "347a7380-3d57-013f-bcf7-04421a259aad",
+                "name": "START KL. 13:15 - GR. 04-Løb29 - 4-Løb29",
+                "start": "2026-05-29T11:15:00+00:00"
+              },
+              {
+                "id": "349e65b0-3d57-013f-bd15-04421a259aad",
+                "name": "START KL. 13:15 - GR. 04-Løb30 - 4-Løb30",
+                "start": "2026-05-29T11:15:00+00:00"
+              },
+              {
+                "id": "34b48070-3d57-013f-bd28-04421a259aad",
+                "name": "START KL. 13:15 - GR. 04-Løb32 - 4-Løb32",
+                "start": "2026-05-29T11:15:00+00:00"
+              },
+              {
+                "id": "350ab070-3d57-013f-bd78-04421a259aad",
+                "name": "START KL. 13:15 - GR. 06-Løb31 - 6-Løb31",
+                "start": "2026-05-29T11:15:00+00:00"
+              }
+            ],
+            "storedUri": "https://liveserver1.tractrac.com/events/event_20260526_FYNCUP/datafiles/78adb8d0-3810-013f-7bd4-04421a259aad.mtb"
+          },
+          {
+            "id": "87f74030-3810-013f-7bd8-04421a259aad",
+            "name": "Texel Lang",
+            "course": "lang",
+            "start": "2026-05-29T11:30:00+00:00",
+            "boats": 17,
+            "source": "https://em.liveserver1.tractrac.com/events/731967d0-37ec-013f-bb67-1c6b0055db37/races/87f74030-3810-013f-7bd8-04421a259aad.json",
+            "classes": [
+              {
+                "id": "34c3d320-3d57-013f-bd35-04421a259aad",
+                "name": "START KL. 13:30 - GR. 05-Løb33 - 5-Løb33",
+                "start": "2026-05-29T11:30:00+00:00"
+              },
+              {
+                "id": "34e1b610-3d57-013f-bd50-04421a259aad",
+                "name": "START KL. 13:30 - GR. 05-Løb34 - 5-Løb34",
+                "start": "2026-05-29T11:30:00+00:00"
+              },
+              {
+                "id": "34f79220-3d57-013f-bd64-04421a259aad",
+                "name": "START KL. 13:30 - GR. 05-Løb35 - 5-Løb35",
+                "start": "2026-05-29T11:30:00+00:00"
+              }
+            ]
+          }
+        ],
+        "courseLineRace": "78adb8d0-3810-013f-7bd4-04421a259aad",
+        "courseLineFinishReference": "2026-05-30T04:25:49.000Z"
+      },
+      "metadataNotes": [
+        "De offentlige løb DH Lang og Texel Lang fra TracTrac indgår på den lange bane.",
+        "Klassevise starter følger TracTracs startgruppeetiketter, tolket i Europe/Copenhagen.",
+        "Den lange rhumbline bruger start-/mållinjen ved Bogense, udsejlingen fra et registreret spor og Fyn rundt-ruten fra Silverrudder.",
+        "De røde bøjer ved Thurø Rev, Fyns Hoved og Æbelø bruger brugerens koordinater i decimalminutter.",
+        "Den samme start-/mållinje følger positionerne fra de to TracTrac-trackere under afspilning."
+      ],
+      "description": "Bogense · lang bane",
+      "storage": {
+        "legacyPrefix": null,
+        "legacyAdminPath": null
+      },
+      "routeEditor": {
+        "allowReplace": true
+      },
+      "nameDisplay": {
+        "startNumberPrefix": true,
+        "removeModelParentheses": false,
+        "duplicateSuffix": "startNumber"
+      },
+      "boatStyle": {
+        "colours": {},
+        "featured": [],
+        "labelOffsets": {},
+        "overrides": {},
+        "dimensions": {}
+      },
+      "layers": {
+        "traffic": true,
+        "military": false
+      },
+      "trackFilter": {
+        "method": "bidirectional-kalman-v1",
+        "gapSeconds": 300,
+        "minInnovationMetres": 80,
+        "gateSquared": 100,
+        "minNoiseMetres": 3,
+        "maxNoiseMetres": 50,
+        "minProcessNoise": 0.02,
+        "maxProcessNoise": 0.5
+      }
     }
   ],
   "weather": {
@@ -2805,6 +3286,13 @@
           "svendborgsund"
         ],
         "silverrudder-2026": [
+          "storebaelt-east",
+          "storebaelt-west",
+          "lillebaelt-old",
+          "lillebaelt-new",
+          "svendborgsund"
+        ],
+        "fyn-cup-2026": [
           "storebaelt-east",
           "storebaelt-west",
           "lillebaelt-old",

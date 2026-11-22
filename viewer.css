@@ -62,6 +62,12 @@ body.rhumbline-setup #mapGates{display:none!important}
 #rhumblineTools p{margin:10px 0}
 #rhumblineTools button{background:#dcecf0;color:#173d4c;border-color:#b8cbd5;padding:7px;font-size:12px}
 #rhumblineTools button:hover{background:#c7dfe6}
+#routeLinePreviewLabel{display:flex;align-items:center;gap:8px;font-size:12px;margin:8px 0 0}
+#routeLinePreview{width:auto;padding:4px 8px}
+#editRouteMarks[aria-pressed=true]{background:#173d4c;color:#fff}
+#routeMarkTools label{font-size:12px;margin:8px 0 4px}
+#routeMarkName{width:100%;margin-bottom:8px;padding:6px;border:1px solid #b8cbd5;border-radius:5px}
+#routeMarkStatus:empty{display:none}
 .map-tool-actions{display:flex;gap:6px;flex-wrap:wrap}
 #measurementResult{display:block;margin:8px 0;font-weight:650;font-variant-numeric:tabular-nums}
 #comparisonStatus{position:absolute;right:0;top:calc(100% + 6px);max-width:330px;margin:0;padding:10px;pointer-events:none}
