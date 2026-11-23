@@ -3247,8 +3247,8 @@
   ],
   "weather": {
     "sjaelland-rundt-2026": {
-      "embedded": true,
-      "radar": "DMI"
+      "file": "weather/sjaelland-rundt-2026/manifest.json",
+      "radar": "OPERA"
     },
     "silverrudder-2024": {
       "file": "weather/silverrudder-2024/manifest.json",
@@ -3260,11 +3260,11 @@
     },
     "silverrudder-2026": {
       "file": "weather/silverrudder-2026/manifest.json",
-      "radar": "DMI"
+      "radar": "OPERA"
     },
     "fyn-cup-2026": {
       "file": "weather/fyn-cup-2026/manifest.json",
-      "radar": "DMI"
+      "radar": "OPERA"
     }
   },
   "boatCountries": {

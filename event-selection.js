@@ -37,8 +37,8 @@ async function loadEventSelection(){
  const event=catalog.events.find(event=>event.id===id);
  if(!event)throw new SRMessageError('Ukendt stævne: {0}',id);
  const weather=catalog.weather?.[id]??null;
- if(weather&&(!['DMI','OPERA'].includes(weather.radar)||
-   (weather.embedded===true?weather.file!==undefined:weather.file!==`weather/${id}/manifest.json`)))
+ if(weather&&(weather.radar!=='OPERA'||
+   weather.file!==`weather/${id}/manifest.json`))
   throw new SRMessageError('Ugyldig vejrkonfiguration for {0}.',id);
  // Weather and country metadata are prepared separately from the track files.
  window.SR_EVENT={...event,weather,boatCountryFile:catalog.boatCountries?.[id],features:{...event.features,weather:!!weather}};

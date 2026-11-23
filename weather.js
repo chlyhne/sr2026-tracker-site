@@ -74,18 +74,18 @@ function nextWeatherTime(time,period){
 const WIND_MODEL='dmi_harmonie_arome_europe';
 const RADAR_OPACITY=.75;
 
-const WEATHER_RADAR_INTERVAL=600;
+const WEATHER_RADAR_INTERVAL=900;
 function validateWeatherAssets(assets,event){
- const prefix=`weather/${event.id}/radar/`,radar=assets?.radar,points=assets?.wind_models?.[WIND_MODEL];
+ const prefix=`weather/${event.id}/rain-rate/`,radar=assets?.radar,points=assets?.wind_models?.[WIND_MODEL];
  const firstFrame=Math.floor(event.start/WEATHER_RADAR_INTERVAL)*WEATHER_RADAR_INTERVAL;
  const lastFrame=Math.floor(event.end/WEATHER_RADAR_INTERVAL)*WEATHER_RADAR_INTERVAL;
  const firstHour=Math.floor(event.start/3600)*3600,lastHour=Math.floor(event.end/3600)*3600;
  const fields=['wind_speed_10m','wind_direction_10m','wind_gusts_10m'];
  const invalid=()=>new SRMessageError('Ugyldige eller ufuldstændige vejrdata for {0}.',event.id);
- if(assets?.version!==1||assets.eventId!==event.id||radar?.source!==event.weather.radar||radar.quantity!=='DBZH'||
+ if(assets?.version!==1||assets.eventId!==event.id||radar?.source!==event.weather.radar||radar.quantity!=='RATE'||radar.unit!=='mm/h'||radar.product!=='surface-rain-rate'||
   radar.interval_seconds!==WEATHER_RADAR_INTERVAL||radar.projection!=='EPSG:4326'||JSON.stringify(radar.bbox)!=='[9.5,54,14,57]'||
   !Array.isArray(radar.frames)||radar.frames.length!==(lastFrame-firstFrame)/WEATHER_RADAR_INTERVAL+1||
-  !radar.frames.every((frame,i)=>frame?.time===firstFrame+i*WEATHER_RADAR_INTERVAL&&frame.file===prefix+frame.time+'.png')||
+  !radar.frames.every((frame,i)=>frame?.time===firstFrame+i*WEATHER_RADAR_INTERVAL&&frame.file===prefix+frame.time+'.png'&&frame.source_quantity==='RATE'&&Date.parse(frame.observed_time)/1000===frame.time)||
   !Array.isArray(points)||points.length!==247)throw invalid();
  for(const point of points){
   const hourly=point?.hourly;
@@ -98,7 +98,7 @@ function validateWeatherAssets(assets,event){
  return assets;
 }
 async function loadEventWeather(event,data){
- if(!event.weather||event.weather.embedded)return;
+ if(!event.weather)return;
  const response=await fetch(event.weather.file);
  if(!response.ok)throw new SRMessageError('Vejrdata kunne ikke hentes ({0}).',response.status);
  const assets=validateWeatherAssets(await response.json(),event);
